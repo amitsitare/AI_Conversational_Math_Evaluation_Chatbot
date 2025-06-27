@@ -1,0 +1,18 @@
+# Algebra - Class 9
+Date: 6/26/2025, 8:24:04 PM
+
+Math Assistant: Hi Amit! I'm your Math Learning Assistant. What grade level are you studying?
+
+Amit: Class 9
+
+Math Assistant: Great! What math topic would you like to practice? (e.g., Algebra, Geometry, Calculus)
+
+Math Assistant: Generating a Algebra question for you...
+
+Math Assistant: Solve for x and y:
+
+(x + y)²  +  (x - y)² = 34
+
+x² - y² = 8
+
+

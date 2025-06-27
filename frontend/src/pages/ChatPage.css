@@ -1,0 +1,16 @@
+.chat-page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.chat-content {
+  flex: 1;
+  padding: 20px 0; /* Add some padding */
+}
+
+.chat-container {
+  max-width: 1200px; /* Increased max-width */
+  margin: 0 auto;
+}
+

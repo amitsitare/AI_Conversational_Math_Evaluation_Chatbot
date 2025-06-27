@@ -1,0 +1,77 @@
+/* Global styles */
+:root {
+  --primary-color: #4a6fa5;
+  --secondary-color: #6c757d;
+  --success-color: #28a745;
+  --info-color: #17a2b8;
+  --warning-color: #ffc107;
+  --danger-color: #dc3545;
+  --light-color: #f8f9fa;
+  --dark-color: #343a40;
+}
+
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark mode custom colors */
+[data-bs-theme="dark"] {
+  --bs-primary: #5a7fb5;
+  --bs-primary-rgb: 90, 127, 181;
+  --bs-body-bg: #121212;
+  --bs-body-color: #e0e0e0;
+  --bs-tertiary-bg: #2d2d2d;
+  --bs-secondary-bg: #1e1e1e;
+  --bs-border-color: #444;
+}
+
+/* Light mode adjustments */
+[data-bs-theme="light"] {
+  --bs-primary: #4a6fa5;
+  --bs-primary-rgb: 74, 111, 165;
+}
+
+/* Card styling */
+.card {
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+[data-bs-theme="dark"] .card {
+  background-color: var(--bs-secondary-bg);
+  border-color: var(--bs-border-color);
+}
+
+/* Button styling */
+.btn {
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background-color: var(--bs-primary);
+  border-color: var(--bs-primary);
+}
+
+.btn-primary:hover {
+  background-color: rgba(var(--bs-primary-rgb), 0.9);
+  border-color: rgba(var(--bs-primary-rgb), 0.9);
+}
+
+/* Form control styling */
+.form-control {
+  border-radius: 0.25rem;
+  transition: border-color 0.2s ease;
+}
+
+[data-bs-theme="dark"] .form-control {
+  background-color: var(--bs-tertiary-bg);
+  border-color: var(--bs-border-color);
+  color: var(--bs-body-color);
+}
+
+[data-bs-theme="dark"] .form-control:focus {
+  background-color: var(--bs-tertiary-bg);
+  color: var(--bs-body-color);
+}
+
