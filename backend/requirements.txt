@@ -1,8 +1,12 @@
-flask
-flask-cors
+Flask
+psycopg2-binary
 python-dotenv
 google-generativeai
-pyjwt
-werkzeug
-psycopg2-binary
+Pillow
+Flask-SQLAlchemy
+Flask-Migrate
+Flask-Login
+Flask-WTF
+Flask-Bcrypt
 gunicorn
+Flask-Cors

@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, Response, stream_template
+from flask import Flask, request, jsonify, Response, stream_template, send_from_directory, session
 from flask_cors import CORS
 from gemini import generate_question, evaluate_answer, answer_direct_question, generate_question_stream, evaluate_answer_stream, answer_direct_question_stream
 import jwt
@@ -13,12 +13,18 @@ from db import create_tables, log_interaction, save_chat_history, get_user_chat_
 import json
 from dotenv import load_dotenv
 import time
+from flask_bcrypt import Bcrypt
 
 load_dotenv()
 
 app = Flask(__name__)
+app.config.from_object('config.Config')
+
+# Enable CORS for all routes and all origins
 CORS(app)
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', '33086545ed2fa90350b6e7ebc1470ed3d117175c03396d0c25c05b613abaa847')
+
+db.init_app(app)
+bcrypt = Bcrypt(app)
 
 # Initialize database tables
 create_tables()
