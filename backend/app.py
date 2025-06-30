@@ -17,7 +17,15 @@ import time
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+
+# Allow your Vercel frontend to make requests to this backend
+cors_origins = [
+    "https://ai-conversational-math-evaluation-c-two.vercel.app",
+    "http://localhost:3000" # Also allow local development
+]
+
+CORS(app, resources={r"/*": {"origins": cors_origins}}, supports_credentials=True)
+
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', '33086545ed2fa90350b6e7ebc1470ed3d117175c03396d0c25c05b613abaa847')
 
 
