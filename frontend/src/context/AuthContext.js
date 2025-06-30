@@ -7,6 +7,7 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [authError, setAuthError] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -31,27 +32,30 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
+    setLoading(true);
+    setAuthError(null);
     try {
-      const response = await axios.post('http://localhost:5000/login', { email, password });
-      const { token } = response.data;
+      const response = await axios.post('https://math-assistant.onrender.com/login', { email, password });
+      const { token, user } = response.data;
       localStorage.setItem('token', token);
-      const decoded = jwtDecode(token);
-      setCurrentUser(decoded);
+      setCurrentUser(user);
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       return true;
     } catch (error) {
-      console.error('Login error:', error);
+      setAuthError(error.response?.data?.error || 'Login failed');
       return false;
     }
   };
 
   const register = async (name, email, password) => {
+    setLoading(true);
+    setAuthError(null);
     try {
-      await axios.post('http://localhost:5000/register', { name, email, password });
+      await axios.post('https://math-assistant.onrender.com/register', { name, email, password });
       return true;
     } catch (error) {
-      console.error('Registration error:', error);
-      return false;
+      setAuthError(error.response?.data?.error || 'Registration failed');
+      throw error;
     }
   };
 
@@ -62,7 +66,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ currentUser, login, register, logout, loading }}>
+    <AuthContext.Provider value={{ currentUser, login, register, logout, loading, authError }}>
       {children}
     </AuthContext.Provider>
   );

@@ -37,7 +37,7 @@ const Home = () => {
     setTableData(null);
     setSelectedTable('');
     try {
-      const res = await fetch('http://localhost:5000/admin/tables', {
+      const res = await fetch('https://math-assistant.onrender.com/admin/tables', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password: adminPassword })
@@ -61,9 +61,11 @@ const Home = () => {
     setTableData(null);
     setSelectedTable(table);
     try {
-      const res = await fetch('http://localhost:5000/admin/table_data', {
+      const res = await fetch('https://math-assistant.onrender.com/admin/table_data', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ password: adminPassword, table })
       });
       const data = await res.json();

@@ -72,10 +72,10 @@ const Chatbot = () => {
 
       // If we already have a chat ID, update the existing session
       if (currentChatId) {
-        await axios.put(`http://localhost:5000/chat_history/${currentChatId}`, payload);
+        await axios.put(`https://math-assistant.onrender.com/chat_history/${currentChatId}`, payload);
       } else {
         // Create new session
-        const response = await axios.post('http://localhost:5000/chat_history', payload);
+        const response = await axios.post('https://math-assistant.onrender.com/chat_history', payload);
         setCurrentChatId(response.data.id);
       }
     } catch (error) {
@@ -102,7 +102,7 @@ const Chatbot = () => {
         // Use sendBeacon for reliable saving on page unload.
         // It needs a Blob or FormData, so we stringify and create a Blob.
         const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
-        navigator.sendBeacon(`http://localhost:5000/chat_history/${currentChatId}`, blob);
+        navigator.sendBeacon(`https://math-assistant.onrender.com/chat_history/${currentChatId}`, blob);
       }
     };
 
@@ -172,7 +172,7 @@ const Chatbot = () => {
       }]);
 
       // Start streaming response
-      const response = await fetch('http://localhost:5000/generate_stream', {
+      const response = await fetch('https://math-assistant.onrender.com/generate_stream', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -289,7 +289,7 @@ const Chatbot = () => {
       }]);
 
       // Start streaming response
-      const response = await fetch('http://localhost:5000/answer_stream', {
+      const response = await fetch('https://math-assistant.onrender.com/answer_stream', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -422,7 +422,7 @@ const Chatbot = () => {
       }]);
 
       // Start streaming response
-      const response = await fetch('http://localhost:5000/direct_question_stream', {
+      const response = await fetch('https://math-assistant.onrender.com/direct_question_stream', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -613,7 +613,7 @@ const Chatbot = () => {
       formData.append('subject', 'Math');
       
       // Call the backend API to process the uploaded image
-      const response = await axios.post('http://localhost:5000/upload_question', formData);
+      const response = await axios.post('https://math-assistant.onrender.com/upload_question', formData);
       const answer = response.data.answer;
       
       setMessages(prev => [...prev, {
@@ -673,7 +673,7 @@ const Chatbot = () => {
 
   const handleSelectChat = useCallback(async (chatId) => {
     try {
-      const response = await axios.get(`http://localhost:5000/chat_history/${chatId}`);
+      const response = await axios.get(`https://math-assistant.onrender.com/chat_history/${chatId}`);
       const chat = response.data;
       
       const parsedMessages = typeof chat.messages === 'string' ? JSON.parse(chat.messages) : chat.messages;
@@ -716,7 +716,7 @@ const Chatbot = () => {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/chat_history');
+        const response = await axios.get('https://math-assistant.onrender.com/chat_history');
         if (response.data && response.data.length > 0) {
           // Load the most recent chat
           handleSelectChat(response.data[0].id);
@@ -737,7 +737,7 @@ const Chatbot = () => {
 
   const handleDeleteChat = async (chatId) => {
     try {
-      await axios.delete(`http://localhost:5000/chat_history/${chatId}`);
+      await axios.delete(`https://math-assistant.onrender.com/chat_history/${chatId}`);
       // If the deleted chat is the current chat, start a new chat
       if (chatId === currentChatId) {
         handleNewChat();

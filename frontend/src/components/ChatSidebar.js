@@ -21,7 +21,7 @@ const ChatSidebar = ({ onSelectChat, onNewChat, onDeleteChat, onRenameChat, curr
   const fetchChatHistory = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:5000/chat_history');
+      const response = await axios.get('https://math-assistant.onrender.com/chat_history');
       // Parse messages for each chat in the history
       const historyWithParsedMessages = response.data.map(chat => ({
         ...chat,
@@ -66,7 +66,7 @@ const ChatSidebar = ({ onSelectChat, onNewChat, onDeleteChat, onRenameChat, curr
           ? JSON.parse(chatToUpdate.messages)
           : chatToUpdate.messages;
 
-      await axios.put(`http://localhost:5000/chat_history/${chatToRename}`, {
+      await axios.put(`https://math-assistant.onrender.com/chat_history/${chatToRename}`, {
         title: newTitle,
         messages: messagesPayload
       });
