@@ -10,3 +10,4 @@ Flask-WTF
 Flask-Bcrypt
 gunicorn
 Flask-Cors
+PyJWT
