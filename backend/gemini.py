@@ -6,17 +6,25 @@ import time
 load_dotenv()
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-def generate_question(grade, subject, topic=None):
+def generate_question(grade, subject, topic=None, difficulty=1):
+    # Map difficulty to text
+    if difficulty == 1:
+        diff_text = "easy"
+    elif difficulty == 2:
+        diff_text = "medium"
+    else:
+        diff_text = "hard"
+
     if topic:
         prompt = f"""You are a Math Learning Assistant. Generate a Class {grade} level {subject} question about {topic}.
 
-        Make it challenging but appropriate for the grade level. Don't give the answer yet, just the question.
+        The question should be {diff_text} difficulty for this grade. Don't give the answer yet, just the question.
 
         The question should be clearly mathematical in nature and suitable for educational practice."""
     else:
         prompt = f"""You are a Math Learning Assistant. Generate a Class {grade} level {subject} question.
 
-        Make it challenging but appropriate for the grade level. Don't give the answer yet, just the question.
+        The question should be {diff_text} difficulty for this grade. Don't give the answer yet, just the question.
 
         The question should be clearly mathematical in nature and suitable for educational practice."""
 
@@ -102,12 +110,19 @@ What math topic would you like to explore? (Algebra, Geometry, Calculus, Statist
     return response.text
 
 # Streaming versions of the functions
-def generate_question_stream(grade, subject, topic=None):
-    """Generate question with streaming response"""
-    if topic:
-        prompt = f"Ask a Class {grade} level {subject} question about {topic}. Make it challenging but appropriate for the grade level. Don't give the answer yet, just the question."
+def generate_question_stream(grade, subject, topic=None, difficulty=1):
+    # Map difficulty to text
+    if difficulty == 1:
+        diff_text = "easy"
+    elif difficulty == 2:
+        diff_text = "medium"
     else:
-        prompt = f"Ask a Class {grade} level {subject} question with answer. Don't give the answer yet, just the question."
+        diff_text = "hard"
+
+    if topic:
+        prompt = f"Ask a Class {grade} level {subject} question about {topic}. The question should be {diff_text} difficulty for this grade. Don't give the answer yet, just the question."
+    else:
+        prompt = f"Ask a Class {grade} level {subject} question. The question should be {diff_text} difficulty for this grade. Don't give the answer yet, just the question."
 
     model = genai.GenerativeModel('gemini-1.5-flash')
     response = model.generate_content(prompt, stream=True)

@@ -12,6 +12,7 @@ const Chatbot = () => {
   const [topic, setTopic] = useState(null);
   const [waitingForAnswer, setWaitingForAnswer] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(null);
+  const [difficultyLevel, setDifficultyLevel] = useState(1); // 1=easy, 2=medium, 3=hard
   const messagesEndRef = useRef(null);
   
   // New state for file upload and custom question modal
@@ -156,10 +157,12 @@ const Chatbot = () => {
   const handleTopicSelection = (selectedTopic) => {
     setTopic(selectedTopic);
     setChatTitle(`${selectedTopic} - ${grade}`);
-    generateQuestion(selectedTopic);
+    setDifficultyLevel(1); // Always start at easy for new topic
+    generateQuestion(selectedTopic, 1);
   };
 
-  const generateQuestion = async (topicName) => {
+  const generateQuestion = async (topicName, diffOverride) => {
+    const diff = diffOverride || difficultyLevel;
     try {
       // Add a placeholder message that will be updated with streaming content
       const placeholderIndex = messages.length + 1;
@@ -178,7 +181,8 @@ const Chatbot = () => {
         body: JSON.stringify({
           grade,
           subject: 'Math',
-          topic: topicName
+          topic: topicName,
+          difficultyLevel: diff
         })
       });
 
@@ -307,6 +311,7 @@ const Chatbot = () => {
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let streamedText = '';
+      let isCorrect = false;
 
       // Update the placeholder message to show streaming
       setMessages(prev => {
@@ -322,6 +327,8 @@ const Chatbot = () => {
       const processAnswerStreamChunk = (data, currentText) => {
         if (data.chunk) {
           const newText = currentText + data.chunk;
+          // Check for correctness in the streamed text
+          if (newText.toLowerCase().includes('correct!')) isCorrect = true;
           // Update the message with accumulated text
           setMessages(prev => {
             const newMessages = [...prev];
@@ -373,18 +380,27 @@ const Chatbot = () => {
         }
       }
 
-      // Ensure streaming indicator is removed after completion
-      setMessages(prev => {
-        const newMessages = [...prev];
-        if (newMessages[placeholderIndex]) {
-          newMessages[placeholderIndex] = {
-            ...newMessages[placeholderIndex],
-            streaming: false,
-            options: newMessages[placeholderIndex].options || ['Yes, another question', 'Try a different topic', 'No thanks']
-          };
+      // Adjust difficulty and add motivational feedback, but do NOT auto-generate next question
+      let newDifficulty = difficultyLevel;
+      let feedbackMsg = '';
+      if (isCorrect) {
+        newDifficulty = Math.min(3, difficultyLevel + 1);
+        if (newDifficulty > difficultyLevel) {
+          feedbackMsg = "Great job! Let's try a slightly harder question next! 🚀";
+        } else {
+          feedbackMsg = "Awesome! Keep going!";
         }
-        return newMessages;
-      });
+      } else {
+        newDifficulty = Math.max(1, difficultyLevel - 1);
+        if (newDifficulty < difficultyLevel) {
+          feedbackMsg = "That's okay! Let's try an easier one to build your confidence. 💪";
+        } else {
+          feedbackMsg = "Don't give up! Practice makes perfect.";
+        }
+      }
+      setDifficultyLevel(newDifficulty);
+      setMessages(prev => [...prev, { text: feedbackMsg, sender: 'bot' }]);
+      // Do NOT auto-generate next question here
 
     } catch (error) {
       console.error('Error checking answer:', error);
@@ -526,6 +542,7 @@ const Chatbot = () => {
   // Use this function in the message options rendering
   const handleOptionClick = (option) => {
     if (option === 'Yes, another question') {
+      // Use the latest difficultyLevel (already updated after last answer)
       generateQuestion(topic);
     } else if (option === 'Try a different topic') {
       setTopic(null);

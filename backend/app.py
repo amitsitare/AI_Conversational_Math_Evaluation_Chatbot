@@ -126,9 +126,10 @@ def ask_question(current_user):
     grade = data.get("grade")
     subject = data.get("subject", "Math")
     topic = data.get("topic", None)  # Optional topic parameter
+    difficulty = data.get("difficultyLevel", 1)
     
     # Generate question using Gemini API
-    question = generate_question(grade, subject, topic)
+    question = generate_question(grade, subject, topic, difficulty)
     
     # Log the interaction
     try:
@@ -333,18 +334,19 @@ def ask_question_stream(current_user):
     grade = data.get("grade")
     subject = data.get("subject", "Math")
     topic = data.get("topic", None)
+    difficulty = data.get("difficultyLevel", 1)
 
     def generate():
         try:
             full_response = ""
-            for chunk in generate_question_stream(grade, subject, topic):
+            for chunk in generate_question_stream(grade, subject, topic, difficulty):
                 full_response += chunk
                 # Send each chunk as Server-Sent Events
-                yield f"data: {json.dumps({'chunk': chunk, 'done': False})}\n\n"
+                yield f"data: {{\"chunk\": {json.dumps(chunk)}, \"done\": false}}\n\n"
                 time.sleep(0.05)  # Small delay for typing effect
 
             # Send completion signal
-            yield f"data: {json.dumps({'chunk': '', 'done': True})}\n\n"
+            yield f"data: {{\"chunk\": \"\", \"done\": true}}\n\n"
 
             # Log the interaction after completion
             try:
@@ -360,7 +362,7 @@ def ask_question_stream(current_user):
                 print(f"Error logging interaction: {e}")
 
         except Exception as e:
-            yield f"data: {json.dumps({'error': str(e)})}\n\n"
+            yield f"data: {{\"error\": {json.dumps(str(e))}}}\n\n"
 
     return Response(generate(), mimetype='text/plain')
 
