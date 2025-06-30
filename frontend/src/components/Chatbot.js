@@ -712,9 +712,10 @@ const Chatbot = () => {
     }
   }, [handleNewChat]);
 
-  // On initial load, fetch chat history
+  // On initial load, fetch the most recent chat history or start a new chat.
+  // This effect runs only once when the user logs in.
   useEffect(() => {
-    const fetchHistory = async () => {
+    const fetchMostRecentHistory = async () => {
       try {
         const response = await axios.get('https://math-assistant.onrender.com/chat_history');
         if (response.data && response.data.length > 0) {
@@ -731,9 +732,9 @@ const Chatbot = () => {
     };
 
     if (currentUser) {
-      fetchHistory();
+      fetchMostRecentHistory();
     }
-  }, [currentUser, handleNewChat, handleSelectChat]);
+  }, [currentUser]); // IMPORTANT: Only re-run when the user logs in/out
 
   const handleDeleteChat = async (chatId) => {
     try {
