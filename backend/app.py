@@ -13,18 +13,13 @@ from db import create_tables, log_interaction, save_chat_history, get_user_chat_
 import json
 from dotenv import load_dotenv
 import time
-from flask_bcrypt import Bcrypt
 
 load_dotenv()
 
 app = Flask(__name__)
-app.config.from_object('config.Config')
-
-# Enable CORS for all routes and all origins
 CORS(app)
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', '33086545ed2fa90350b6e7ebc1470ed3d117175c03396d0c25c05b613abaa847')
 
-db.init_app(app)
-bcrypt = Bcrypt(app)
 
 # Initialize database tables
 create_tables()
@@ -124,6 +119,11 @@ def login():
     except psycopg2.Error as e:
         print(f"Database error during login: {e}")
         return jsonify({'message': 'Login failed!'}), 500
+
+@app.route('/logout', methods=['POST'])
+def logout():
+    session.clear()
+    return jsonify({"message": "Logout successful"})
 
 @app.route("/generate", methods=["POST"])
 @token_required
