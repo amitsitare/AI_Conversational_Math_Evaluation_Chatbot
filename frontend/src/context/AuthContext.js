@@ -36,9 +36,10 @@ export const AuthProvider = ({ children }) => {
     setAuthError(null);
     try {
       const response = await axios.post('https://math-assistant.onrender.com/login', { email, password });
-      const { token, user } = response.data;
+      const { token } = response.data;
       localStorage.setItem('token', token);
-      setCurrentUser(user);
+      const decoded = jwtDecode(token);
+      setCurrentUser(decoded);
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       return true;
     } catch (error) {
