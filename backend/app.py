@@ -20,7 +20,7 @@ app = Flask(__name__)
 
 # Allow your Vercel frontend to make requests to this backend
 cors_origins = [
-    "https://ai-conversational-math-evaluation-c-two.vercel.app",
+    "https://ai-conversational-math-evaluation-c.vercel.app",
     "http://localhost:3000" # Also allow local development
 ]
 
