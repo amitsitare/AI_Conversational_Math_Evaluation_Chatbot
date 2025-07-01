@@ -120,7 +120,13 @@ def login():
                 'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)
             }, app.config['SECRET_KEY'], algorithm="HS256")
 
-            return jsonify({'token': token})
+            # Return user info (without password)
+            user_info = {
+                'id': user['id'],
+                'name': user['name'],
+                'email': user['email']
+            }
+            return jsonify({'token': token, 'user': user_info})
 
         return jsonify({'message': 'Invalid credentials!'}), 401
 
