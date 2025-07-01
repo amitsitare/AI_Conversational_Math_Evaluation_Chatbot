@@ -6,25 +6,8 @@ import { AuthContext } from '../context/AuthContext';
 import './ChatPage.css';
 
 const ChatPage = () => {
-  const { currentUser,loading } = useContext(AuthContext);
+  const { currentUser } = useContext(AuthContext);
 
-   // Show a spinner while AuthContext is loading
-   if (loading) {
-    return (
-      <div className="d-flex justify-content-center align-items-center vh-100">
-        <Spinner animation="border" variant="primary" />
-      </div>
-    );
-  }
-
-  // Optional: handle case when currentUser is not set
-  if (!currentUser) {
-    return (
-      <div className="d-flex justify-content-center align-items-center vh-100">
-        <p>User not found. Please log in again.</p>
-      </div>
-    );
-  }
 
   return (
     <div className="chat-page-container">

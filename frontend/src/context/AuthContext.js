@@ -11,27 +11,20 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
     if (token) {
       try {
         const decoded = jwtDecode(token);
         // Check if token is expired
         if (decoded.exp * 1000 < Date.now()) {
           localStorage.removeItem('token');
-          localStorage.removeItem('user');
           setCurrentUser(null);
         } else {
-          if (storedUser) {
-            setCurrentUser(JSON.parse(storedUser)); // ✅ Proper user info
-          } else {
-            setCurrentUser(decoded); // fallback
-          }
+          setCurrentUser(decoded);
           // Set auth header for all requests
           axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         }
       } catch (error) {
         localStorage.removeItem('token');
-        localStorage.removeItem('user');
         setCurrentUser(null);
       }
     }
@@ -45,14 +38,12 @@ export const AuthProvider = ({ children }) => {
       const response = await axios.post('https://math-assistant.onrender.com/login', { email, password });
       const { token, user } = response.data;
       localStorage.setItem('token', token);
-      setCurrentUser(user, JSON.stringify(user));
+      setCurrentUser(user);
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       return true;
     } catch (error) {
       setAuthError(error.response?.data?.error || 'Login failed');
       return false;
-    }finally {
-      setLoading(false);
     }
   };
 
@@ -70,7 +61,6 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('user');
     delete axios.defaults.headers.common['Authorization'];
     setCurrentUser(null);
   };
