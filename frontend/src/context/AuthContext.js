@@ -32,9 +32,11 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
-    setLoading(true);
-    setAuthError(null);
+    // setLoading(true);
+    // setAuthError(null);
     try {
+      setLoading(true);
+      setAuthError(null);
       const response = await axios.post('https://math-assistant.onrender.com/login', { email, password });
       const { token } = response.data;
       localStorage.setItem('token', token);
@@ -45,18 +47,24 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       setAuthError(error.response?.data?.error || 'Login failed');
       return false;
+    }finally {
+      setLoading(false);
     }
   };
 
   const register = async (name, email, password) => {
-    setLoading(true);
-    setAuthError(null);
+    // setLoading(true);
+    // setAuthError(null);
     try {
+      setLoading(true);
+      setAuthError(null);
       await axios.post('https://math-assistant.onrender.com/register', { name, email, password });
       return true;
     } catch (error) {
       setAuthError(error.response?.data?.error || 'Registration failed');
       throw error;
+    }finally {
+      setLoading(false); 
     }
   };
 
