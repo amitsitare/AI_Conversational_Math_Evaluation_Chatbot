@@ -141,9 +141,10 @@ def ask_question(current_user):
     subject = data.get("subject", "Math")
     topic = data.get("topic", None)  # Optional topic parameter
     difficulty = data.get("difficultyLevel", 1)
+    language = data.get("language", "English")
     
     # Generate question using Gemini API
-    question = generate_question(grade, subject, topic, difficulty)
+    question = generate_question(grade, subject, topic, difficulty, language)
     
     # Log the interaction
     try:
@@ -169,6 +170,7 @@ def answer_question(current_user):
     grade = data.get("grade")
     subject = data.get("subject", "Math")
     topic = data.get("topic", None)  # Optional topic parameter
+    language = data.get("language", "English")
 
     # Try to extract the correct answer from the question (for demo, you may want to improve this logic)
     # For now, let's assume the correct answer is provided in data for testing
@@ -177,7 +179,7 @@ def answer_question(current_user):
         feedback = "Correct!\n\n✅ Summary: The correct answer is {}. Well done!".format(correct_answer)
     else:
         # Evaluate answer using Gemini API
-        feedback = evaluate_answer(question, user_answer)
+        feedback = evaluate_answer(question, user_answer, language)
     
     # Log the interaction
     try:
@@ -202,9 +204,10 @@ def direct_question(current_user):
     grade = data.get("grade")
     subject = data.get("subject", "Math")
     topic = data.get("topic", None)  # Optional topic parameter
+    language = data.get("language", "English")
     
     # Answer direct question using Gemini API
-    answer = answer_direct_question(question, grade, subject, topic)
+    answer = answer_direct_question(question, grade, subject, topic, language)
     
     # Log the interaction
     try:
@@ -355,11 +358,12 @@ def ask_question_stream(current_user):
     subject = data.get("subject", "Math")
     topic = data.get("topic", None)
     difficulty = data.get("difficultyLevel", 1)
+    language = data.get("language", "English")
 
     def generate():
         try:
             full_response = ""
-            for chunk in generate_question_stream(grade, subject, topic, difficulty):
+            for chunk in generate_question_stream(grade, subject, topic, difficulty, language):
                 full_response += chunk
                 # Send each chunk as Server-Sent Events
                 yield f"data: {{\"chunk\": {json.dumps(chunk)}, \"done\": false}}\n\n"
@@ -395,6 +399,7 @@ def answer_question_stream(current_user):
     grade = data.get("grade")
     subject = data.get("subject", "Math")
     topic = data.get("topic", None)
+    language = data.get("language", "English")
     correct_answer = data.get("correct_answer")
     def generate():
         try:
@@ -417,7 +422,7 @@ def answer_question_stream(current_user):
                     print(f"Error logging interaction: {e}")
                 return
             full_response = ""
-            for chunk in evaluate_answer_stream(question, user_answer):
+            for chunk in evaluate_answer_stream(question, user_answer, language):
                 full_response += chunk
                 # Send each chunk as Server-Sent Events
                 yield f"data: {json.dumps({'chunk': chunk, 'done': False})}\n\n"
@@ -448,11 +453,12 @@ def direct_question_stream(current_user):
     grade = data.get("grade")
     subject = data.get("subject", "Math")
     topic = data.get("topic", None)
+    language = data.get("language", "English")
 
     def generate():
         try:
             full_response = ""
-            for chunk in answer_direct_question_stream(question, grade, subject, topic):
+            for chunk in answer_direct_question_stream(question, grade, subject, topic, language):
                 full_response += chunk
                 # Send each chunk as Server-Sent Events
                 yield f"data: {json.dumps({'chunk': chunk, 'done': False})}\n\n"

@@ -13,6 +13,7 @@ const Chatbot = () => {
   const [waitingForAnswer, setWaitingForAnswer] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [difficultyLevel, setDifficultyLevel] = useState(1); // 1=easy, 2=medium, 3=hard
+  const [language, setLanguage] = useState(null); // New state for language
   const messagesEndRef = useRef(null);
   
   // New state for file upload and custom question modal
@@ -29,14 +30,26 @@ const Chatbot = () => {
   const [chatTitle, setChatTitle] = useState('New Chat');
   const { currentUser } = useContext(AuthContext);
 
-  // Initialize welcome message with user's name if available
+  // Show language selection at the start of chat
   useEffect(() => {
-    setMessages([{ 
-      text: `Hi ${currentUser?.name || 'there'}! I'm your Math Learning Assistant. What grade level are you studying?`, 
-      sender: 'bot',
-      options: ['Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12']
-    }]);
-  }, [currentUser]);
+    if (!language) {
+      setMessages([
+        {
+          text: 'Which language do you prefer? Please select:',
+          sender: 'bot',
+          options: ['English', 'Hindi']
+        }
+      ]);
+    } else {
+      setMessages([
+        {
+          text: `Hi ${currentUser?.name || 'there'}! I'm your Math Learning Assistant. What grade level are you studying?`,
+          sender: 'bot',
+          options: ['Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12']
+        }
+      ]);
+    }
+  }, [currentUser, language]);
 
   useEffect(() => {
     scrollToBottom();
@@ -182,7 +195,8 @@ const Chatbot = () => {
           grade,
           subject: 'Math',
           topic: topicName,
-          difficultyLevel: diff
+          difficultyLevel: diff,
+          language // Pass language
         })
       });
 
@@ -300,7 +314,8 @@ const Chatbot = () => {
           answer,
           grade,
           subject: 'Math',
-          topic
+          topic,
+          language // Pass language
         })
       });
 
@@ -432,7 +447,8 @@ const Chatbot = () => {
           question,
           grade,
           subject: 'Math',
-          topic
+          topic,
+          language // Pass language
         })
       });
 
@@ -541,6 +557,10 @@ const Chatbot = () => {
 
   // Use this function in the message options rendering
   const handleOptionClick = (option) => {
+    if (!language && (option === 'English' || option === 'Hindi')) {
+      setLanguage(option);
+      return;
+    }
     if (option === 'Yes, another question') {
       // Use the latest difficultyLevel (already updated after last answer)
       generateQuestion(topic);
