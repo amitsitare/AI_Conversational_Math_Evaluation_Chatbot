@@ -1,14 +1,17 @@
 import React, { useContext, useState } from 'react';
 import { Container, Row, Col, Button, Card, Modal, Form, Table, Alert, Spinner } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import AppNavbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { BarChart, Cpu, Star } from 'react-bootstrap-icons';
 import { ThemeContext } from '../context/ThemeContext';
+import { AuthContext } from '../context/AuthContext';
 import './Home.css';
 
 const Home = () => {
   const { darkMode } = useContext(ThemeContext);
+  const { currentUser } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   // Admin modal state
   const [showAdmin, setShowAdmin] = useState(false);
@@ -18,6 +21,15 @@ const Home = () => {
   const [tables, setTables] = useState([]);
   const [tableData, setTableData] = useState(null);
   const [selectedTable, setSelectedTable] = useState('');
+
+  // Handle get started button click
+  const handleGetStarted = () => {
+    if (currentUser) {
+      navigate('/chat');
+    } else {
+      navigate('/register');
+    }
+  };
 
   // Open admin modal
   const handleAdminClick = () => {
@@ -92,12 +104,19 @@ const Home = () => {
                 Our AI-powered platform provides instant, step-by-step evaluations for any math problem. Get the feedback you need to understand concepts, not just find answers.
               </p>
               <div className="d-grid gap-2 d-md-flex">
-                <Link to="/register">
-                  <Button variant="primary" size="lg" className="px-4 me-md-2">Get Started for Free</Button>
-                </Link>
-                <Link to="/login">
-                  <Button variant="outline-secondary" size="lg" className="px-4">Login</Button>
-                </Link>
+                <Button 
+                  variant="primary" 
+                  size="lg" 
+                  className="px-4 me-md-2"
+                  onClick={handleGetStarted}
+                >
+                  Get Started for Free
+                </Button>
+                {!currentUser && (
+                  <Link to="/login">
+                    <Button variant="outline-secondary" size="lg" className="px-4">Login</Button>
+                  </Link>
+                )}
               </div>
             </Col>
             <Col lg={6} className="mt-5 mt-lg-0 text-center">
@@ -171,9 +190,14 @@ const Home = () => {
               <p className="lead mb-4">
                 Join thousands of students improving their skills every day. Your next level of math mastery is just a click away.
               </p>
-              <Link to="/register">
-                <Button variant="primary" size="lg" className="px-5 py-3">Take Your First Assessment</Button>
-              </Link>
+              <Button 
+                variant="primary" 
+                size="lg" 
+                className="px-5 py-3"
+                onClick={handleGetStarted}
+              >
+                Take Your First Assessment
+              </Button>
             </Col>
           </Row>
         </Container>

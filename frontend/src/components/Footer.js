@@ -3,10 +3,12 @@ import { Container, Row, Col, Nav } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { Github, Twitter, Instagram, Linkedin } from 'react-bootstrap-icons';
 import { ThemeContext } from '../context/ThemeContext';
+import { AuthContext } from '../context/AuthContext';
 import './Footer.css';
 
 const Footer = () => {
   const { darkMode } = useContext(ThemeContext);
+  const { currentUser } = useContext(AuthContext);
 
   return (
     <footer className={`footer py-5 ${darkMode ? 'footer-dark' : ''}`}>
@@ -22,9 +24,18 @@ const Footer = () => {
             <h5 className="footer-title">Navigate</h5>
             <Nav className="flex-column">
               <Nav.Link as={Link} to="/" className="text-muted">Home</Nav.Link>
-              <Nav.Link as={Link} to="/login" className="text-muted">Login</Nav.Link>
-              <Nav.Link as={Link} to="/register" className="text-muted">Register</Nav.Link>
-              <Nav.Link as={Link} to="/chat" className="text-muted">Chat</Nav.Link>
+              {currentUser ? (
+                <>
+                  <Nav.Link as={Link} to="/chat" className="text-muted">Chat</Nav.Link>
+                  <Nav.Link as={Link} to="/contact" className="text-muted">Contact</Nav.Link>
+                </>
+              ) : (
+                <>
+                  <Nav.Link as={Link} to="/login" className="text-muted">Login</Nav.Link>
+                  <Nav.Link as={Link} to="/register" className="text-muted">Register</Nav.Link>
+                  <Nav.Link as={Link} to="/contact" className="text-muted">Contact</Nav.Link>
+                </>
+              )}
             </Nav>
           </Col>
           <Col md={3} className="mb-4 mb-md-0">

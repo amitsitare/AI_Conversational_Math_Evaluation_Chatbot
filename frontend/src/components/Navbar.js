@@ -55,12 +55,9 @@ const AppNavbar = ({ onAdminClick }) => {
                 </Button>
               </>
             ) : (
-              <>
-                <Nav.Link as={Link} to="/login" className="me-2">Login</Nav.Link>
-                <Button variant="primary" as={Link} to="/register">
-                  Register
-                </Button>
-              </>
+              <Button variant="primary" as={Link} to="/register">
+                Register
+              </Button>
             )}
           </Nav>
         </Navbar.Collapse>
