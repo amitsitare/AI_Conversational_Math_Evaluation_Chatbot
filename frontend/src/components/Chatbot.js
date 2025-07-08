@@ -43,9 +43,13 @@ const Chatbot = () => {
     } else {
       setMessages([
         {
-          text: `Hi ${currentUser?.name || 'there'}! I'm your Math Learning Assistant. What grade level are you studying?`,
+          text: language === 'Hindi'
+            ? `नमस्ते ${currentUser?.name || ''}! मैं आपकी गणित सहायक हूँ। आप किस कक्षा में पढ़ रहे हैं?`
+            : `Hi ${currentUser?.name || 'there'}! I'm your Math Learning Assistant. What grade level are you studying?`,
           sender: 'bot',
-          options: ['Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12']
+          options: language === 'Hindi'
+            ? ['कक्षा 7', 'कक्षा 8', 'कक्षा 9', 'कक्षा 10', 'कक्षा 11', 'कक्षा 12']
+            : ['Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12']
         }
       ]);
     }
@@ -567,20 +571,29 @@ const Chatbot = () => {
     } else if (option === 'Try a different topic') {
       setTopic(null);
       setMessages(prev => [...prev, {
-        text: `What math topic would you like to practice next?`,
+        text: language === 'Hindi'
+          ? 'आप कौन सा गणित विषय अभ्यास करना चाहेंगे?' 
+          : 'What math topic would you like to practice next?',
         sender: 'bot',
-        options: ['Algebra', 'Geometry', 'Calculus', 'Statistics', 'Arithmetic']
+        options: language === 'Hindi'
+          ? ['बीजगणित', 'ज्यामिति', 'कलन', 'सांख्यिकी', 'अंकगणित']
+          : ['Algebra', 'Geometry', 'Calculus', 'Statistics', 'Arithmetic']
       }]);
-    } else if (['Algebra', 'Geometry', 'Calculus', 'Statistics', 'Arithmetic'].includes(option)) {
+    } else if ((language === 'Hindi' && ['बीजगणित', 'ज्यामिति', 'कलन', 'सांख्यिकी', 'अंकगणित'].includes(option)) ||
+               (language === 'English' && ['Algebra', 'Geometry', 'Calculus', 'Statistics', 'Arithmetic'].includes(option))) {
       // Handle topic selection from redirection or topic change
       if (!grade) {
         // If no grade is set, ask for grade first
         setMessages(prev => [...prev,
           { text: option, sender: 'user' },
           {
-            text: `Great choice! What grade level are you studying?`,
+            text: language === 'Hindi'
+              ? 'बहुत अच्छा! आप किस कक्षा में पढ़ रहे हैं?' 
+              : 'Great choice! What grade level are you studying?',
             sender: 'bot',
-            options: ['Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12']
+            options: language === 'Hindi'
+              ? ['कक्षा 7', 'कक्षा 8', 'कक्षा 9', 'कक्षा 10', 'कक्षा 11', 'कक्षा 12']
+              : ['Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12']
           }
         ]);
         setTopic(option); // Store the selected topic
