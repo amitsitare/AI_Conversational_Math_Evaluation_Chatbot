@@ -30,30 +30,18 @@ const Chatbot = () => {
   const [chatTitle, setChatTitle] = useState('New Chat');
   const { currentUser } = useContext(AuthContext);
 
-  // Show language selection at the start of chat
+  // Show language selection at the start of chat or new chat
   useEffect(() => {
-    if (!language) {
-      setMessages([
-        {
-          text: 'Which language do you prefer? Please select:',
-          sender: 'bot',
-          options: ['English', 'Hindi']
-        }
-      ]);
-    } else {
-      setMessages([
-        {
-          text: language === 'Hindi'
-            ? `नमस्ते ${currentUser?.name || ''}! मैं आपकी गणित सहायक हूँ। आप किस कक्षा में पढ़ रहे हैं?`
-            : `Hi ${currentUser?.name || 'there'}! I'm your Math Learning Assistant. What grade level are you studying?`,
-          sender: 'bot',
-          options: language === 'Hindi'
-            ? ['कक्षा 7', 'कक्षा 8', 'कक्षा 9', 'कक्षा 10', 'कक्षा 11', 'कक्षा 12']
-            : ['Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12']
-        }
-      ]);
-    }
-  }, [currentUser, language]);
+    setMessages([
+      {
+        text: 'Which language do you prefer? Please select:',
+        sender: 'bot',
+        options: ['English', 'Hindi']
+      }
+    ]);
+    setLanguage(null);
+    // eslint-disable-next-line
+  }, [currentUser]); // Only on login or new chat
 
   useEffect(() => {
     scrollToBottom();
@@ -563,6 +551,17 @@ const Chatbot = () => {
   const handleOptionClick = (option) => {
     if (!language && (option === 'English' || option === 'Hindi')) {
       setLanguage(option);
+      setMessages([
+        {
+          text: option === 'Hindi'
+            ? `नमस्ते ${currentUser?.name || ''}! मैं आपकी गणित सहायक हूँ। आप किस कक्षा में पढ़ रहे हैं?`
+            : `Hi ${currentUser?.name || 'there'}! I'm your Math Learning Assistant. What grade level are you studying?`,
+          sender: 'bot',
+          options: option === 'Hindi'
+            ? ['कक्षा 7', 'कक्षा 8', 'कक्षा 9', 'कक्षा 10', 'कक्षा 11', 'कक्षा 12']
+            : ['Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12']
+        }
+      ]);
       return;
     }
     if (option === 'Yes, another question') {
@@ -690,8 +689,8 @@ const Chatbot = () => {
     }
   };
 
+  // In handleNewChat, reset language and show language selection prompt
   const handleNewChat = useCallback(async () => {
-    // Create a new chat history on the backend immediately
     try {
       const response = await axios.post('https://math-assistant.onrender.com/chat_history', {
         title: 'New Chat',
@@ -702,11 +701,14 @@ const Chatbot = () => {
       console.error('Error creating new chat session:', error);
       setCurrentChatId(null); // fallback
     }
-    setMessages([{ 
-      text: `Hi ${currentUser?.name || 'there'}! I'm your Math Learning Assistant. What grade level are you studying?`, 
-      sender: 'bot',
-      options: ['Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12']
-    }]);
+    setMessages([
+      {
+        text: 'Which language do you prefer? Please select:',
+        sender: 'bot',
+        options: ['English', 'Hindi']
+      }
+    ]);
+    setLanguage(null);
     setGrade(null);
     setTopic(null);
     setWaitingForAnswer(false);
