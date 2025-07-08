@@ -2,7 +2,6 @@ import os
 from dotenv import load_dotenv
 import google.generativeai as genai
 import time
-import re
 
 load_dotenv()
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
@@ -219,20 +218,3 @@ What math topic would you like to explore? (Algebra, Geometry, Calculus, Statist
     for chunk in response:
         if chunk.text:
             yield chunk.text
-
-def extract_number(user_input):
-    """Extract the first number (integer or decimal) from the input string."""
-    match = re.search(r'[-+]?[0-9]*\.?[0-9]+', str(user_input))
-    if match:
-        return float(match.group())
-    return None
-
-def is_correct_answer(user_input, correct_answer):
-    user_value = extract_number(user_input)
-    if user_value is None:
-        return False
-    try:
-        correct_value = float(correct_answer)
-    except Exception:
-        return False
-    return abs(user_value - correct_value) < 1e-6

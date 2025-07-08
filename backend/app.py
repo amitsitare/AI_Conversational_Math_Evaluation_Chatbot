@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, Response, stream_template, send_from_directory, session
 from flask_cors import CORS
-from gemini import generate_question, evaluate_answer, answer_direct_question, generate_question_stream, evaluate_answer_stream, answer_direct_question_stream, is_correct_answer
+from gemini import generate_question, evaluate_answer, answer_direct_question, generate_question_stream, evaluate_answer_stream, answer_direct_question_stream
 import jwt
 import datetime
 from functools import wraps
@@ -170,14 +170,9 @@ def answer_question(current_user):
     subject = data.get("subject", "Math")
     topic = data.get("topic", None)  # Optional topic parameter
 
-    # Try to extract the correct answer from the question (for demo, you may want to improve this logic)
-    # For now, let's assume the correct answer is provided in data for testing
-    correct_answer = data.get("correct_answer")
-    if correct_answer is not None and is_correct_answer(user_answer, correct_answer):
-        feedback = "Correct!\n\n✅ Summary: The correct answer is {}. Well done!".format(correct_answer)
-    else:
-        # Evaluate answer using Gemini API
-        feedback = evaluate_answer(question, user_answer)
+    # Evaluate answer using Gemini API
+    feedback = evaluate_answer(question, user_answer)
+    
     # Log the interaction
     try:
         log_interaction(
@@ -190,6 +185,7 @@ def answer_question(current_user):
         )
     except Exception as e:
         print(f"Error logging interaction: {e}")
+    
     return jsonify({"feedback": feedback})
 
 @app.route("/direct_question", methods=["POST"])
@@ -393,35 +389,19 @@ def answer_question_stream(current_user):
     grade = data.get("grade")
     subject = data.get("subject", "Math")
     topic = data.get("topic", None)
-    correct_answer = data.get("correct_answer")
+
     def generate():
         try:
-            if correct_answer is not None and is_correct_answer(user_answer, correct_answer):
-                # Stream a correct response immediately
-                correct_text = f"Correct!\n\n✅ Summary: The correct answer is {correct_answer}. Well done!"
-                yield f"data: {{\"chunk\": {json.dumps(correct_text)}, \"done\": false}}\n\n"
-                yield f"data: {{\"chunk\": \"\", \"done\": true}}\n\n"
-                # Log the interaction
-                try:
-                    log_interaction(
-                        grade=grade,
-                        subject=subject,
-                        topic=topic,
-                        question=question,
-                        answer=user_answer,
-                        feedback=correct_text
-                    )
-                except Exception as e:
-                    print(f"Error logging interaction: {e}")
-                return
             full_response = ""
             for chunk in evaluate_answer_stream(question, user_answer):
                 full_response += chunk
                 # Send each chunk as Server-Sent Events
                 yield f"data: {json.dumps({'chunk': chunk, 'done': False})}\n\n"
                 time.sleep(0.05)  # Small delay for typing effect
+
             # Send completion signal
             yield f"data: {json.dumps({'chunk': '', 'done': True})}\n\n"
+
             # Log the interaction after completion
             try:
                 log_interaction(
@@ -434,8 +414,10 @@ def answer_question_stream(current_user):
                 )
             except Exception as e:
                 print(f"Error logging interaction: {e}")
+
         except Exception as e:
             yield f"data: {json.dumps({'error': str(e)})}\n\n"
+
     return Response(generate(), mimetype='text/plain')
 
 @app.route("/direct_question_stream", methods=["POST"])
