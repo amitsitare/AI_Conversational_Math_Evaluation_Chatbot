@@ -657,8 +657,18 @@ const Chatbot = () => {
     }
   };
 
-  const handleNewChat = useCallback(() => {
-    setCurrentChatId(null);
+  const handleNewChat = useCallback(async () => {
+    // Create a new chat history on the backend immediately
+    try {
+      const response = await axios.post('https://math-assistant.onrender.com/chat_history', {
+        title: 'New Chat',
+        messages: []
+      });
+      setCurrentChatId(response.data.id);
+    } catch (error) {
+      console.error('Error creating new chat session:', error);
+      setCurrentChatId(null); // fallback
+    }
     setMessages([{ 
       text: `Hi ${currentUser?.name || 'there'}! I'm your Math Learning Assistant. What grade level are you studying?`, 
       sender: 'bot',
